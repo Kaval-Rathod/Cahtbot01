@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Service</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Chatbot Service</h1>
+        <form id="ask-form" action="/ask" method="post" enctype="multipart/form-data">
+            <h2>Ask a Question</h2>
+            <input type="file" name="file" required>
+            <textarea name="query" placeholder="Enter your question here" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+
+        <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+            <h2>Upload a File for Summarization</h2>
+            <input type="file" name="file" required>
+            <button type="submit">Upload</button>
+        </form>
+        
+        <div id="response"></div>
+        <div id="summary"></div>
+    </div>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

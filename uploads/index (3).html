@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+<head>
+    <title>Task Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            /* justify-content: center; */
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #task-list {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .task .task-date {
+            font-size: 12px;
+            color: #777;
+            margin-right: 10px;
+        }
+
+        .task input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .task button {
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-left: 5px;
+            border-radius: 3px;
+        }
+
+        .task button.completed {
+            background-color: #4CAF50;
+        }
+
+        .task input[type="text"]:read-only {
+            background-color: #f3f3f3;
+            border: none;
+        }
+
+        .input{
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive Styles */
+        @media screen and (max-width: 480px) {
+            #task-list {
+                padding: 10px;
+            }
+
+            .task {
+                padding: 5px;
+            }
+
+            .task input[type="text"] {
+                padding: 5px;
+            }
+
+            .task button {
+                padding: 3px 8px;
+            }
+
+            .task .task-date {
+                font-size: 10px;
+                margin-right: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="task-list">
+        <h1>Task Manager</h1>
+        <div class="input" >
+            <input type="text" id="new-task" placeholder="Enter a new task">
+            <button onclick="addTask()">Add</button>
+        </div>
+        <div id="tasks">
+            <!-- Task items will be added here -->
+        </div>
+    </div>
+
+    <script>
+        // Load tasks from local storage when the page loads
+        window.onload = function() {
+            loadTasks();
+        };
+
+        function addTask() {
+            const taskText = document.getElementById("new-task").value.trim();
+            if (taskText !== "") {
+                const taskList = document.getElementById("tasks");
+                const taskItem = document.createElement("div");
+                taskItem.className = "task";
+                const currentDateTime = new Date().toLocaleString(); // Get current date and time
+                taskItem.innerHTML = `
+                    <div class="task-date">${currentDateTime}</div>
+                    <input type="text" value="${taskText}" readonly>
+                    <button onclick="removeTask(this)">Delete</button>
+                    <button onclick="markAsCompleted(this)">Complete</button>
+                `;
+                taskList.appendChild(taskItem);
+                document.getElementById("new-task").value = "";
+
+                // Save tasks to local storage
+                saveTasks();
+            }
+        }
+
+        function removeTask(button) {
+            const taskList = document.getElementById("tasks");
+            taskList.removeChild(button.parentElement);
+
+            // Save tasks to local storage after removing a task
+            saveTasks();
+        }
+
+        function markAsCompleted(button) {
+            const taskItem = button.parentElement;
+            taskItem.classList.toggle("completed");
+            button.classList.toggle("completed"); // Toggle the 'completed' class on the button
+
+            // Save tasks to local storage after marking as completed
+            saveTasks();
+        }
+
+        // Save tasks to local storage
+        function saveTasks() {
+            const tasks = [];
+            const taskElements = document.querySelectorAll(".task");
+            taskElements.forEach(function(taskElement) {
+                const dateDiv = taskElement.querySelector(".task-date");
+                const textInput = taskElement.querySelector("input[type='text']");
+                const isCompleted = taskElement.classList.contains("completed");
+                tasks.push({
+                    date: dateDiv.textContent,
+                    text: textInput.value,
+                    completed: isCompleted,
+                });
+            });
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+
+        // Load tasks from local storage
+        function loadTasks() {
+            const savedTasks = localStorage.getItem("tasks");
+            if (savedTasks) {
+                const tasks = JSON.parse(savedTasks);
+                tasks.forEach(function(task) {
+                    const taskList = document.getElementById("tasks");
+                    const taskItem = document.createElement("div");
+                    taskItem.className = "task";
+                    if (task.completed) {
+                        taskItem.classList.add("completed");
+                    }
+                    taskItem.innerHTML = `
+                        <div class="task-date">${task.date}</div>
+                        <input type="text" value="${task.text}" readonly>
+                        <button onclick="removeTask(this)">Delete</button>
+                        <button onclick="markAsCompleted(this)" class="${task.completed ? 'completed' : ''}">${task.completed ? 'Completed' : 'Complete'}</button>
+                    `;
+                    taskList.appendChild(taskItem);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
