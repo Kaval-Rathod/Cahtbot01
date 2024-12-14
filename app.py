@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 
 # Initialize Groq client
-client = groq.Groq(api_key="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")
+client = groq.Groq(api_key="...")
 
 # Define your LLaMA API endpoint and key
 LLAMA_API_URL = "https://api.llama.com/summarize"
